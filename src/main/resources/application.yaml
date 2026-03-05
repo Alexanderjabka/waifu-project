@@ -6,6 +6,7 @@ spring:
       enabled: ${SPRING_DOCKER_COMPOSE_ENABLED:false}
   mongodb:
     uri: ${SPRING_DATA_MONGODB_URI:mongodb://localhost:27017/hedged_requests}
+    auto-index-creation: true
 
 server:
   port: ${PORT:${SERVER_PORT:8080}}

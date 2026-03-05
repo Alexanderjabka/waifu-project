@@ -2,6 +2,7 @@ package com.popruzhenko.hedgedrequests.model;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
@@ -22,6 +23,7 @@ public class WaifuImage {
 
     private String contentType;
 
+    @Indexed(name = "waifu_created_at_ttl_idx", expireAfterSeconds = 300)
     private LocalDateTime createdAt;
 
 }

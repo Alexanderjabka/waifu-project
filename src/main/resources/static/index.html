@@ -16,24 +16,36 @@
 
 <script>
 
-    const socket = new SockJS('/ws');
-    const stomp = Stomp.over(socket);
+    let stomp;
+    let reconnectTimer;
 
-    stomp.connect({}, function () {
+    function connectWebSocket() {
+        const socket = new SockJS('/ws');
+        stomp = Stomp.over(socket);
+        stomp.debug = null;
+        stomp.reconnect_delay = 5000;
 
-        stomp.subscribe('/topic/waifu', function (message) {
+        stomp.connect({}, function () {
 
-            const data = JSON.parse(message.body);
-            const contentType = data.contentType || "image/jpeg";
+            clearTimeout(reconnectTimer);
 
-            document.getElementById("waifuImage").src =
-                "data:" + contentType + ";base64," + data.imageBase64;
+            stomp.subscribe('/topic/waifu', function (message) {
 
-            document.getElementById("text").innerText = data.text;
+                const data = JSON.parse(message.body);
+                const contentType = data.contentType || "image/jpeg";
 
+                document.getElementById("waifuImage").src =
+                    "data:" + contentType + ";base64," + data.imageBase64;
+
+                document.getElementById("text").innerText = data.text;
+
+            });
+        }, function () {
+            reconnectTimer = setTimeout(connectWebSocket, 5000);
         });
+    }
 
-    });
+    connectWebSocket();
 
 </script>
 
