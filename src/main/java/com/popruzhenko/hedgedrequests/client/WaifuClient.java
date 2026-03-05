@@ -1,7 +1,9 @@
 package com.popruzhenko.hedgedrequests.client;
 
+import com.popruzhenko.hedgedrequests.dto.DownloadedImage;
 import com.popruzhenko.hedgedrequests.dto.WaifuImagesResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -31,11 +33,14 @@ public class WaifuClient {
                 });
     }
 
-    public Mono<byte[]> downloadImage(String url) {
+    public Mono<DownloadedImage> downloadImage(String url) {
 
         return webClient.get()
                 .uri(url)
-                .retrieve()
-                .bodyToMono(byte[].class);
+                .exchangeToMono(response -> {
+                    MediaType mediaType = response.headers().contentType().orElse(MediaType.IMAGE_JPEG);
+                    return response.bodyToMono(byte[].class)
+                            .map(body -> new DownloadedImage(body, mediaType.toString()));
+                });
     }
 }

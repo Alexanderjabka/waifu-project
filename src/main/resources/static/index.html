@@ -24,9 +24,10 @@
         stomp.subscribe('/topic/waifu', function (message) {
 
             const data = JSON.parse(message.body);
+            const contentType = data.contentType || "image/jpeg";
 
             document.getElementById("waifuImage").src =
-                "data:image/jpeg;base64," + data.imageBase64;
+                "data:" + contentType + ";base64," + data.imageBase64;
 
             document.getElementById("text").innerText = data.text;
 

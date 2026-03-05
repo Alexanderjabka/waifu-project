@@ -26,15 +26,16 @@ public class WaifuService {
 
                 .flatMap(url ->
                         waifuClient.downloadImage(url)
-                                .map(bytes -> WaifuImage.builder()
+                                .map(downloadedImage -> WaifuImage.builder()
                                         .originalUrl(url)
-                                        .imageData(bytes)
+                                        .imageData(downloadedImage.data())
+                                        .contentType(downloadedImage.contentType())
                                         .createdAt(LocalDateTime.now())
                                         .build()
                                 )
                 )
 
-                .flatMap(waifuRepository::save)
+                .flatMap(image -> waifuRepository.save(image).onErrorResume(e -> Mono.just(image)))
 
                 .flatMap(savedImage -> {
 
@@ -47,10 +48,11 @@ public class WaifuService {
                                     )
                                     .subscribeOn(Schedulers.boundedElastic());
 
-                    return Mono.zip(textMono, base64Mono)
+                            return Mono.zip(textMono, base64Mono)
                             .map(tuple -> WaifuMessageResponse.builder()
                                     .text(tuple.getT1())
                                     .imageBase64(tuple.getT2())
+                                    .contentType(savedImage.getContentType())
                                     .build());
                 });
     }
