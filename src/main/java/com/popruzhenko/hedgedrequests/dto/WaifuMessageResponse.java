@@ -9,6 +9,7 @@ import lombok.*;
 @Builder
 public class WaifuMessageResponse {
     private String imageBase64;
+    private String contentType;
 
     private String text;
 }
