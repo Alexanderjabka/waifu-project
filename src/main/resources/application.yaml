@@ -1,6 +1,9 @@
 spring:
   application:
     name: hedged-requests
+  docker:
+    compose:
+      enabled: ${SPRING_DOCKER_COMPOSE_ENABLED:false}
   mongodb:
     uri: ${SPRING_DATA_MONGODB_URI:mongodb://localhost:27017/hedged_requests}
 
